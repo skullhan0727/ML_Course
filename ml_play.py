@@ -76,7 +76,7 @@ def ml_loop():
             platform_x=scene_info.platform[0]
             platform_y=scene_info.platform[1]
             #print("x change:",ball_x-ball_x_old,"y change",ball_y-ball_y_old)
-"""
+
             if ball_y-ball_y_old>0 and 100<ball_y<190 :
                 if ball_x-ball_x_old<0 :
                     hit_y=ball_y+(((ball_x-0)//7)+1)*7
@@ -106,7 +106,7 @@ def ml_loop():
 
             if ball_y==395:
                 print("************ball_x:",ball_x,"ball_y",ball_y,"platformx:",platform_x)
-"""
+
 
 
 
