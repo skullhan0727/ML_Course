@@ -32,7 +32,7 @@ def ml_loop():
     ball_x=0
     ball_y=0
     should_x=75
-
+    i=0
 
     # 3. Start an endless loop.
     while True:
@@ -52,9 +52,10 @@ def ml_loop():
             continue
 
         # 3.3. Put the code here to handle the scene information
-    
-        # 3.4. Send the instruction for this frame to the game process
-        if not ball_served:
+        if not ball_served and i<10:
+            comm.send_instruction(scene_info.frame, PlatformAction.MOVE_LEFT)
+            i+=1
+        elif not ball_served and i==10:
             comm.send_instruction(scene_info.frame, PlatformAction.SERVE_TO_RIGHT)
             ball_served = True
         else:
@@ -76,7 +77,67 @@ def ml_loop():
             platform_y=scene_info.platform[1]
             #print("x change:",ball_x-ball_x_old,"y change",ball_y-ball_y_old)
 
-            if ball_y-ball_y_old>0 and 100<ball_y<300:
+
+            now_ball_x=ball_x
+            now_ball_y=ball_y
+
+            vector_x_right= (True if ball_x-ball_x_old>0 else False)
+            vector_y_down= True if ball_y-ball_y_old>0 else False
+            
+            hit_y=0
+
+            while hit_y!=395:
+                if vector_x_right:
+                    hit_x=195
+                else:
+                    hit_x=0
+
+                if vector_y_down:
+                    hit_y=395
+                else:
+                    hit_y=0     
+
+                if abs(now_ball_x-hit_x) <abs(now_ball_y-hit_y):
+                    if vector_y_down:
+                        hit_y=((abs(now_ball_x-hit_x)-1)//7+1)*7+now_ball_y
+                    else:
+                        hit_y=-((abs(now_ball_x-hit_x)-1)//7+1)*7+now_ball_y
+                    vector_x_right=not vector_x_right 
+                else:
+                    if vector_x_right:
+                        hit_x=((abs(now_ball_y-hit_y)-1)//7+1)*7+now_ball_x
+                    else:
+                        hit_x=-((abs(now_ball_y-hit_y)-1)//7+1)*7+now_ball_x
+                    vector_y_down=not vector_y_down  
+                
+                now_ball_x=hit_x
+                now_ball_y=hit_y
+
+            should_x=hit_x
+
+            if should_x<platform_x:
+                comm.send_instruction(scene_info.frame, PlatformAction.MOVE_LEFT)
+                #print("left")
+                print("ball_x",ball_x,"ball_y",ball_y,"should_x:",should_x,"platform_x:",platform_x,"===left") 
+            elif should_x>platform_x+30:
+                comm.send_instruction(scene_info.frame, PlatformAction.MOVE_RIGHT)
+                #print("right")
+                print("ball_x",ball_x,"ball_y",ball_y,"should_x:",should_x,"platform_x:",platform_x,"+++++++right") 
+            else:
+                comm.send_instruction(scene_info.frame, PlatformAction.NONE)
+                print("ball_x",ball_x,"ball_y",ball_y,"should_x:",should_x,"platform_x:",platform_x) 
+                 
+            
+            if ball_y==395:
+                print("************ball_x:",ball_x,"ball_y",ball_y,"platformx:",platform_x,"********************")
+            
+            #print(ball_x-ball_x_old,ball_y-ball_y_old)                  
+            
+                          
+
+
+"""
+            if ball_y-ball_y_old>0 and 100<ball_y<390:
                 if ball_x-ball_x_old<0 :
                     hit_y=ball_y+(((ball_x-0)//7)+1)*7
                     if 395-hit_y<195:
@@ -90,26 +151,16 @@ def ml_loop():
                         should_x=195-(395-hit_y)
                     else:
                         should_x=0+((395-hit_y)-(195//7+1)*7)
+"""
               
            
-            if ball_y-ball_y_old>0:
-                if should_x<platform_x:
-                    comm.send_instruction(scene_info.frame, PlatformAction.MOVE_LEFT)
-                    #print("left")
-                    print("ball_x",ball_x,"ball_y",ball_y,"should_x:",should_x,"platform_x:",platform_x,"===left") 
-                elif should_x>platform_x+30:
-                    comm.send_instruction(scene_info.frame, PlatformAction.MOVE_RIGHT)
-                    #print("right")
-                    print("ball_x",ball_x,"ball_y",ball_y,"should_x:",should_x,"platform_x:",platform_x,"+++++++right") 
-                else:
-                    comm.send_instruction(scene_info.frame, PlatformAction.NONE)
-            else:
-                comm.send_instruction(scene_info.frame, PlatformAction.NONE)
-            
-            #print("ball_x",ball_x,"ball_y",ball_y,"should_x:",should_x,"platform_x:",platform_x) 
 
-            if ball_y==395:
-                print("************ball_x:",ball_x,"ball_y",ball_y,"platformx:",platform_x,"********************")
+
+
+            
+
+
+
 
 
 
