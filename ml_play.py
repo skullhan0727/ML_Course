@@ -52,10 +52,9 @@ def ml_loop():
             continue
 
         # 3.3. Put the code here to handle the scene information
-
+    
         # 3.4. Send the instruction for this frame to the game process
         if not ball_served:
-
             comm.send_instruction(scene_info.frame, PlatformAction.SERVE_TO_RIGHT)
             ball_served = True
         else:
@@ -77,7 +76,7 @@ def ml_loop():
             platform_y=scene_info.platform[1]
             #print("x change:",ball_x-ball_x_old,"y change",ball_y-ball_y_old)
 
-            if ball_y-ball_y_old>0 and 100<ball_y<190 :
+            if ball_y-ball_y_old>0 and 100<ball_y<300:
                 if ball_x-ball_x_old<0 :
                     hit_y=ball_y+(((ball_x-0)//7)+1)*7
                     if 395-hit_y<195:
@@ -96,16 +95,21 @@ def ml_loop():
             if ball_y-ball_y_old>0:
                 if should_x<platform_x:
                     comm.send_instruction(scene_info.frame, PlatformAction.MOVE_LEFT)
-                        #print("left")
+                    #print("left")
+                    print("ball_x",ball_x,"ball_y",ball_y,"should_x:",should_x,"platform_x:",platform_x,"===left") 
                 elif should_x>platform_x+30:
                     comm.send_instruction(scene_info.frame, PlatformAction.MOVE_RIGHT)
-                        #print("right")
+                    #print("right")
+                    print("ball_x",ball_x,"ball_y",ball_y,"should_x:",should_x,"platform_x:",platform_x,"+++++++right") 
                 else:
                     comm.send_instruction(scene_info.frame, PlatformAction.NONE)
-            print("ball_x",ball_x,"ball_y",ball_y,"should_x:",should_x,"platform_x:",platform_x) 
+            else:
+                comm.send_instruction(scene_info.frame, PlatformAction.NONE)
+            
+            #print("ball_x",ball_x,"ball_y",ball_y,"should_x:",should_x,"platform_x:",platform_x) 
 
             if ball_y==395:
-                print("************ball_x:",ball_x,"ball_y",ball_y,"platformx:",platform_x)
+                print("************ball_x:",ball_x,"ball_y",ball_y,"platformx:",platform_x,"********************")
 
 
 
